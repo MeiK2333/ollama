@@ -48,6 +48,11 @@ EOF
         findutils \
         yum-utils \
         pigz
+elif grep -i "ubuntu" /etc/os-release >/dev/null; then
+    rm /var/lib/dpkg/info/libc-bin.*
+    apt-get clean
+    apt-get update
+    apt-get install -y libc-bin gcc g++ git make curl
 else
     echo "ERROR Unexpected distro"
     exit 1
@@ -56,6 +61,8 @@ fi
 if [ "${MACHINE}" = "x86_64" ] ; then
     curl -s -L https://github.com/ccache/ccache/releases/download/v4.10.2/ccache-4.10.2-linux-x86_64.tar.xz | tar -Jx -C /tmp --strip-components 1 && \
     mv /tmp/ccache /usr/local/bin/
+elif grep -i "ubuntu" /etc/os-release >/dev/null; then
+    apt-get install -y ccache
 else
     yum -y install epel-release
     yum install -y ccache

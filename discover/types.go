@@ -85,6 +85,11 @@ type OneapiGPUInfo struct {
 }
 type OneapiGPUInfoList []OneapiGPUInfo
 
+type AscendGPUInfo struct {
+	GpuInfo
+}
+type AscendGPUInfoList []AscendGPUInfo
+
 type GpuInfoList []GpuInfo
 
 type UnsupportedGPUInfo struct {

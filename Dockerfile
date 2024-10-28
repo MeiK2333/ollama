@@ -81,6 +81,17 @@ RUN --mount=type=cache,target=/root/.ccache \
     OLLAMA_CUSTOM_CUDA_DEFS="-DGGML_CUDA_USE_GRAPHS=on" \
     bash gen_linux.sh
 
+FROM --platform=linux/arm64 ascendai/cann:8.0.rc3.alpha002-910b-ubuntu22.04-py3.9 AS ascend-build-arm64
+ARG CMAKE_VERSION
+ARG GOLANG_VERSION
+COPY ./scripts/rh_linux_deps.sh /
+RUN CMAKE_VERSION=${CMAKE_VERSION} GOLANG_VERSION=${GOLANG_VERSION} sh /rh_linux_deps.sh
+COPY --from=llm-code / /go/src/github.com/ollama/ollama/
+WORKDIR /go/src/github.com/ollama/ollama/llm/generate
+ARG CGO_CFLAGS
+ENV GOARCH=arm64
+RUN --mount=type=cache,target=/root/.ccache \
+    OLLAMA_SKIP_STATIC_GENERATE=1 OLLAMA_SKIP_CPU_GENERATE=1 bash gen_linux.sh
 
 FROM --platform=linux/amd64 rocm/dev-centos-7:${ROCM_VERSION}-complete AS rocm-build-amd64
 ARG CMAKE_VERSION
@@ -168,6 +179,8 @@ COPY --from=cuda-11-build-runner-arm64 /go/src/github.com/ollama/ollama/dist/ di
 COPY --from=cuda-11-build-runner-arm64 /go/src/github.com/ollama/ollama/build/ build/
 COPY --from=cuda-12-build-runner-arm64 /go/src/github.com/ollama/ollama/dist/ dist/
 COPY --from=cuda-12-build-runner-arm64 /go/src/github.com/ollama/ollama/build/ build/
+COPY --from=ascend-build-arm64 /go/src/github.com/ollama/ollama/dist/ dist/
+COPY --from=ascend-build-arm64 /go/src/github.com/ollama/ollama/build/ build/
 ARG GOFLAGS
 ARG CGO_CFLAGS
 RUN --mount=type=cache,target=/root/.ccache \
