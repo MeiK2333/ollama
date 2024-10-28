@@ -53,6 +53,7 @@ elif grep -i "ubuntu" /etc/os-release >/dev/null; then
     apt-get clean
     apt-get update
     apt-get install -y libc-bin gcc g++ git make curl
+    ln -s /usr/local/Ascend/ascend-toolkit/latest/aarch64-linux/devlib/linux/aarch64/libascend_hal.so /usr/local/Ascend/ascend-toolkit/latest/lib64/libascend_hal.so
 else
     echo "ERROR Unexpected distro"
     exit 1

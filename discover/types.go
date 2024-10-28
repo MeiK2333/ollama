@@ -87,6 +87,7 @@ type OneapiGPUInfoList []OneapiGPUInfo
 
 type AscendGPUInfo struct {
 	GpuInfo
+	index int //nolint:unused,nolintlint
 }
 type AscendGPUInfoList []AscendGPUInfo
 
